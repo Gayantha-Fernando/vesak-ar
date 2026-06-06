@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vesak Lantern AR</title>
+    <script type="module" src="C:\Users\Test\Downloads\kuduwa.obj (1)\kuduwa.obj.fbx"></script>
+    <style>
+        body { margin: 0; padding: 0; background-color: #111; }
+        model-viewer {
+            width: 100vw;
+            height: 100vh;
+        }
+        /* Custom AR Button Styling */
+        #ar-button {
+            background-color: #ff4a5a;
+            color: white;
+            border-radius: 20px;
+            border: none;
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <model-viewer 
+        src="VesakLantern_AR.glb" 
+        ar 
+        ar-modes="webxr scene-viewer quick-look" 
+        camera-controls 
+        auto-rotate 
+        shadow-intensity="1"
+        exposure="1.5">
+        
+        <button slot="ar-button" id="ar-button">
+            📳 VIEW IN YOUR ROOM (AR)
+        </button>
+    </model-viewer>
+
+</body>
+</html>
