@@ -24,7 +24,7 @@
             --poster-color: transparent;
         }
 
-        /* Keeps the button strictly on screen */
+        /* The Main Interaction Button */
         #ar-button {
             background-color: #ff4a5a;
             color: white;
@@ -40,12 +40,41 @@
             box-shadow: 0 4px 15px rgba(255, 74, 90, 0.4);
             cursor: pointer;
             z-index: 9999;
+            transition: all 0.3s ease;
+        }
+
+        #ar-button:disabled {
+            background-color: #555555;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        /* Tiny, clean text fallback notification style */
+        #fallback-text {
+            display: none; 
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #aaaaaa;
+            font-size: 11px; 
+            text-align: center;
+            width: 90%;
+            z-index: 10000;
+            pointer-events: none; 
+            line-height: 1.3;
         }
     </style>
 </head>
 <body>
 
+    <div id="fallback-text">
+        Note: AR mode requires updated browser software or Google Play Services for AR. Viewing interactive 3D model.
+    </div>
+
     <model-viewer 
+        id="lantern-viewer"
         src="lantern.glb" 
         ar 
         ar-modes="webxr scene-viewer quick-look" 
@@ -54,11 +83,52 @@
         shadow-intensity="1.5"
         exposure="1.3">
         
-        <button slot="ar-button" id="ar-button">
-            📳 VIEW IN YOUR ROOM
+        <button slot="ar-button" id="ar-button" disabled>
+            ⏳ Wait until the model is loaded...
         </button>
         
     </model-viewer>
+
+    <script>
+        const viewer = document.querySelector('#lantern-viewer');
+        const arButton = document.querySelector('#ar-button');
+        const fallbackText = document.querySelector('#fallback-text');
+
+        // --- THE DYNAMIC CONFIGURATION ENGINE ---
+        viewer.addEventListener('load', () => {
+            if (!viewer.canActivateAR) {
+                fallbackText.style.display = 'block';
+                arButton.removeAttribute('disabled');
+                arButton.style.backgroundColor = "#2b2b2b";
+                arButton.style.boxShadow = "none";
+                arButton.innerHTML = '✨ INTERACTIVE 3D MODE';
+                
+                arButton.addEventListener('click', () => {
+                    viewer.cameraOrbit = "0deg 75deg 105%";
+                });
+            } else {
+                arButton.removeAttribute('disabled');
+                arButton.innerHTML = '📳 VIEW IN YOUR ROOM';
+            }
+        });
+
+        // --- THE FIX: STAND STRAIGHT AND SPIN ---
+        const degreesPerSecond = 15; 
+        
+        const spinModel = (time) => {
+            const seconds = time / 1000;
+            const currentAngle = (seconds * degreesPerSecond) % 360;
+            
+            // 0deg keeps it from tilting forward/backward
+            // 0deg keeps it from tilting left/right
+            // ${currentAngle}deg spins it smoothly around its vertical spine
+            viewer.orientation = `0deg 0deg ${currentAngle}deg`; 
+            
+            requestAnimationFrame(spinModel);
+        };
+        
+        requestAnimationFrame(spinModel);
+    </script>
 
 </body>
 </html>
